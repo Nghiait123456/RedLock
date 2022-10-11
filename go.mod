@@ -1,4 +1,4 @@
-module github.com/Nghiait123456/redlock/v1
+module github.com/Nghiait123456/redlock
 
 go 1.14
 

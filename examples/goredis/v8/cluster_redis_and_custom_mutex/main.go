@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	redsync "github.com/Nghiait123456/redlock/v1"
-	"github.com/Nghiait123456/redlock/v1/redis/goredis/v8"
+	redsync "github.com/Nghiait123456/redlock"
 	goredislib "github.com/go-redis/redis/v8"
 	"time"
 )
