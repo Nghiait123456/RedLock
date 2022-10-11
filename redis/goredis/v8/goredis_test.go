@@ -1,6 +1,6 @@
 package goredis
 
-import "github.com/go-redsync/redsync/v4/redis"
+import "github.com/Nghiait123456/redlock/redis"
 
 var _ redis.Conn = (*conn)(nil)
 

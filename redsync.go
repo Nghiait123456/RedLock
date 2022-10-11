@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/go-redsync/redsync/v4/redis"
+	"github.com/Nghiait123456/redlock/redis"
 )
 
 const (

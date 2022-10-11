@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	redsync "github.com/Nghiait123456/redlock"
+	"github.com/Nghiait123456/redlock/redis/goredis/v8"
 	goredislib "github.com/go-redis/redis/v8"
 	"time"
 )
@@ -34,7 +35,7 @@ func main() {
 		mutex.SetDriftFactor(0.01)
 	})
 
-	mutex := rs.NewMutex("test-redsync1", customExpiry, customTries, customDelayFc, customDiftFactor)
+	mutex := rs.NewMutex("test-redsync2", customExpiry, customTries, customDelayFc, customDiftFactor)
 	ctx := context.Background()
 
 	fmt.Println("start lock")

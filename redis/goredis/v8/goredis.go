@@ -2,11 +2,10 @@ package goredis
 
 import (
 	"context"
+	redsyncredis "github.com/Nghiait123456/redlock/redis"
+	"github.com/go-redis/redis/v8"
 	"strings"
 	"time"
-
-	"github.com/go-redis/redis/v8"
-	redsyncredis "github.com/go-redsync/redsync/v4/redis"
 )
 
 type pool struct {
