@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/go-redsync/redsync/v4.svg)](https://pkg.go.dev/github.com/go-redsync/redsync/v4) [![Build Status](https://travis-ci.org/go-redsync/redsync.svg?branch=master)](https://travis-ci.org/go-redsync/redsync) 
 
-Redlock provides a Redis-based distributed mutual exclusion lock implementation for Go as described in [this post](http://redis.io/topics/distlock). A reference library (by [antirez](https://github.com/antirez)) for Ruby is available at [github.com/antirez/redlock-rb](https://github.com/antirez/redlock-rb).
+Redlock provides a Redis-based distributed mutual exclusion lock implementation for Go as described in [this post](http://redis.io/topics/distlock). A reference library (by [antirez](https://github.com/antirez)) for Ruby is available at [github.com/antirez/redlock-rb](https://github.com/antirez/redlock-rb). </br>
 Why i created this packet? </br>
 This packet base from https://github.com/go-redis/redis. During the period of use, I needed access with quite high RQS to the lock, and the default config of https://github.com/go-redis/redis was unresponsive and unfriendly. Packet https://github.com/go-redis/redis has not updated for a long time, there are a few other packets that meet the requirements but are not as strong as the community test suite same https://github.com/go-redis/redis. I need a simple custom Mutex, easy to use for my project. I was customs Mutex for my project. </br>
 ## Installation
@@ -90,3 +90,6 @@ func main() {
 	fmt.Println("end lock success")
 }
 ```
+
+
+All-example in  [Link](https://github.com/Nghiait123456/RedLock/tree/master/examples)
