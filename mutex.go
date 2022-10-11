@@ -33,6 +33,31 @@ type Mutex struct {
 	pools []redis.Pool
 }
 
+//SetExpiry custom expiry in callback f
+func (m *Mutex) SetExpiry(t time.Duration) {
+	m.expiry = t
+}
+
+//SetTies custom expiry in callback f
+func (m *Mutex) SetTries(ties int) {
+	m.tries = ties
+}
+
+//SetDelayFunc custom DelayFunc in callback f
+func (m *Mutex) SetDelayFunc(f DelayFunc) {
+	m.delayFunc = f
+}
+
+//SetDriftFactor custom DriftFactor in callback f
+func (m *Mutex) SetDriftFactor(v float64) {
+	m.driftFactor = v
+}
+
+//SetTimeoutFactor custom TimeoutFactor in callback f
+func (m *Mutex) SetTimeoutFactor(v float64) {
+	m.timeoutFactor = v
+}
+
 // Name returns mutex name (i.e. the Redis key).
 func (m *Mutex) Name() string {
 	return m.name

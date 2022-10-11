@@ -1,4 +1,4 @@
-module github.com/Nghiait123456/redsync/v4
+module github.com/Nghiait123456/redlock/v1
 
 go 1.14
 
