@@ -2,13 +2,14 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/go-redsync/redsync/v4.svg)](https://pkg.go.dev/github.com/go-redsync/redsync/v4) [![Build Status](https://travis-ci.org/go-redsync/redsync.svg?branch=master)](https://travis-ci.org/go-redsync/redsync) 
 
-Redsync provides a Redis-based distributed mutual exclusion lock implementation for Go as described in [this post](http://redis.io/topics/distlock). A reference library (by [antirez](https://github.com/antirez)) for Ruby is available at [github.com/antirez/redlock-rb](https://github.com/antirez/redlock-rb).
-
+Redlock provides a Redis-based distributed mutual exclusion lock implementation for Go as described in [this post](http://redis.io/topics/distlock). A reference library (by [antirez](https://github.com/antirez)) for Ruby is available at [github.com/antirez/redlock-rb](https://github.com/antirez/redlock-rb).
+Why i created this packet? </br>
+This packet base from https://github.com/go-redis/redis. During the period of use, I needed access with quite high RQS to the lock, and the default config of https://github.com/go-redis/redis was unresponsive and unfriendly. Packet https://github.com/go-redis/redis has not updated for a long time, there are a few other packets that meet the requirements but are not as strong as the community test suite same https://github.com/go-redis/redis. I need a simple custom Mutex, easy to use for my project. I was customs Mutex for my project. </br>
 ## Installation
 
 Install  Redsync using the go get command:
 
-    $ go get github.com/go-redsync/redsync/v4
+    $ go get github.com/Nghiait123456/redlock
 
 Two driver    implementations will be installed; however, only the one used will be included in your project.
 
@@ -19,62 +20,73 @@ See the [examples](examples) folder for usage of each driver.
 
 ## Documentation
 
-- [Reference](https://godoc.org/github.com/go-redsync/redsync)
+- [Reference](https://godoc.org/github.com/Nghiait123456/redlock)
 
 ## Usage
 
-Error handling is simplified to `panic` for shorter example.
+Redis-cluster example:
 
 ```go
 package main
 
 import (
+	"context"
+	"fmt"
+	"github.com/Nghiait123456/redlock"
+	"github.com/Nghiait123456/redlock/redis/goredis/v8"
 	goredislib "github.com/go-redis/redis/v8"
-	"github.com/go-redsync/redsync/v4"
-	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
+	"time"
 )
 
 func main() {
-	// Create a pool with go-redis (or redigo) which is the pool redisync will
-	// use while communicating with Redis. This can also be any pool that
-	// implements the `redis.Pool` interface.
-	client := goredislib.NewClient(&goredislib.Options{
-		Addr: "localhost:6379",
+	client := goredislib.NewClusterClient(&goredislib.ClusterOptions{
+		Addrs:    []string{"127.0.0.1:6379"},
+		Password: "bitnami",
 	})
-	pool := goredis.NewPool(client) // or, pool := redigo.NewPool(...)
 
-	// Create an instance of redisync to be used to obtain a mutual exclusion
-	// lock.
+	pool := goredis.NewPool(client)
+
 	rs := redsync.New(pool)
 
-	// Obtain a new mutex by using the same name for all instances wanting the
-	// same lock.
-	mutexname := "my-global-mutex"
-	mutex := rs.NewMutex(mutexname)
+	mutex := rs.NewMutex("test-redsync")
+	ctx := context.Background()
 
-	// Obtain a lock for our given mutex. After this is successful, no one else
-	// can obtain the same lock (the same mutex name) until we unlock it.
-	if err := mutex.Lock(); err != nil {
+	fmt.Println("start lock")
+	if err := mutex.LockContext(ctx); err != nil {
+		fmt.Println("lock fail")
+		panic(err)
+	}
+	fmt.Println("start lock success")
+
+	fmt.Println("start race condition lock 1st")
+	go func() {
+		fmt.Println("start race conditions lock 1st")
+		if err := mutex.LockContext(ctx); err != nil {
+			fmt.Printf("race conditions fail 1st, err: %v \n", err.Error())
+		}
+		fmt.Println("race conditions lock success 1st")
+	}()
+
+	time.Sleep(10 * time.Second)
+
+	fmt.Println("start end lock")
+	if _, err := mutex.UnlockContext(ctx); err != nil {
+		fmt.Printf("race conditions fail 1st, err: %v \n", err.Error())
 		panic(err)
 	}
 
-	// Do your work that requires the lock.
+	fmt.Println("start race condition lock 2st")
+	go func() {
+		fmt.Println("start race conditions lock 2st")
+		if err := mutex.LockContext(ctx); err != nil {
+			fmt.Println("race conditions fail 2st")
+			panic(err)
+		}
+		fmt.Println("race conditions lock success 2st")
+	}()
 
-	// Release the lock so other processes or threads can obtain a lock.
-	if ok, err := mutex.Unlock(); !ok || err != nil {
-		panic("unlock failed")
-	}
+	time.Sleep(1 * time.Second)
+
+	fmt.Println("end lock success")
 }
 ```
-
-## Contributing
-
-Contributions are welcome.
-
-## License
-
-Redsync is available under the [BSD (3-Clause) License](https://opensource.org/licenses/BSD-3-Clause).
-
-## Disclaimer
-
-This code implements an algorithm which is currently a proposal, it was not formally analyzed. Make sure to understand how it works before using it in production environments.
