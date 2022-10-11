@@ -1,12 +1,11 @@
 package main
 
 import (
-	"time"
-
-	"github.com/go-redsync/redsync/v4"
-	"github.com/go-redsync/redsync/v4/redis/redigo"
+	"github.com/Nghiait123456/redlock"
+	"github.com/Nghiait123456/redlock/redis/redigo"
 	redigolib "github.com/gomodule/redigo/redis"
 	"github.com/stvp/tempredis"
+	"time"
 )
 
 func main() {
